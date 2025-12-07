@@ -5,6 +5,7 @@
 1. `workflows.md` - Task patterns
 2. `tools.md` - MCP tools
 3. `patterns.md` - Code patterns
+4. [zero-skills](https://github.com/zeromicro/zero-skills) - Detailed patterns (查阅详细模式)
 
 ## Rules
 
@@ -41,6 +42,16 @@ User Request →
 ├─ Database? → generate_model
 └─ Modify? → Edit .api → generate_api_from_spec
 ```
+
+## Detailed Patterns
+
+For complete implementation patterns, refer to [zero-skills](https://github.com/zeromicro/zero-skills):
+
+- REST API → [rest-api-patterns.md](https://github.com/zeromicro/zero-skills/blob/main/patterns/rest-api-patterns.md)
+- RPC Services → [rpc-patterns.md](https://github.com/zeromicro/zero-skills/blob/main/patterns/rpc-patterns.md)
+- Database → [database-patterns.md](https://github.com/zeromicro/zero-skills/blob/main/patterns/database-patterns.md)
+- Resilience → [resilience-patterns.md](https://github.com/zeromicro/zero-skills/blob/main/patterns/resilience-patterns.md)
+- Troubleshooting → [common-issues.md](https://github.com/zeromicro/zero-skills/blob/main/troubleshooting/common-issues.md)
 
 ## Avoid
 
