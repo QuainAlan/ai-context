@@ -55,12 +55,12 @@ If you prefer manual installation, choose your AI tool:
 
 ```bash
 # Install ai-context (workflow instructions)
-git clone https://github.com/zeromicro/ai-context.git .claude/ai-context
+git submodule add https://github.com/zeromicro/ai-context.git .claude/ai-context
 
 # Install zero-skills (knowledge base)
-git clone https://github.com/zeromicro/zero-skills.git .claude/skills/zero-skills
+git submodule add https://github.com/zeromicro/zero-skills.git .claude/skills/zero-skills
 
-# Install mcp-zero (code generation tools)
+# Install mcp-zero (code generation tools) - personal directory, not in project
 git clone https://github.com/zeromicro/mcp-zero.git ~/.mcp-zero
 cd ~/.mcp-zero && go build -o mcp-zero main.go
 
@@ -80,7 +80,7 @@ git submodule add https://github.com/zeromicro/ai-context.git .github/ai-context
 ln -s ai-context/00-instructions.md .github/copilot-instructions.md
 
 # Add zero-skills for reference
-git clone https://github.com/zeromicro/zero-skills.git .ai-context/zero-skills
+git submodule add https://github.com/zeromicro/zero-skills.git .ai-context/zero-skills
 ```
 
 ### Cursor
@@ -90,7 +90,7 @@ git clone https://github.com/zeromicro/zero-skills.git .ai-context/zero-skills
 git submodule add https://github.com/zeromicro/ai-context.git .cursorrules
 
 # Add zero-skills for reference
-git clone https://github.com/zeromicro/zero-skills.git .ai-context/zero-skills
+git submodule add https://github.com/zeromicro/zero-skills.git .ai-context/zero-skills
 ```
 
 Cursor automatically reads all `.md` files in `.cursorrules` directory.
@@ -102,7 +102,7 @@ Cursor automatically reads all `.md` files in `.cursorrules` directory.
 git submodule add https://github.com/zeromicro/ai-context.git .windsurfrules
 
 # Add zero-skills for reference
-git clone https://github.com/zeromicro/zero-skills.git .ai-context/zero-skills
+git submodule add https://github.com/zeromicro/zero-skills.git .ai-context/zero-skills
 ```
 
 ## After Setup
@@ -134,14 +134,15 @@ Review my handler code for go-zero anti-patterns
 Keep your AI context up to date:
 
 ```bash
-# Update ai-context
+# Update all submodules at once
+git submodule update --remote --recursive
+
+# Or update individually
 git submodule update --remote .github/ai-context  # Copilot
 git submodule update --remote .cursorrules        # Cursor
 git submodule update --remote .windsurfrules      # Windsurf
-
-# Update zero-skills
-cd .claude/skills/zero-skills && git pull         # Claude Code
-cd .ai-context/zero-skills && git pull            # Others
+git submodule update --remote .ai-context/zero-skills
+git submodule update --remote .claude/skills/zero-skills
 ```
 
 ## How It Works
@@ -255,12 +256,12 @@ AI 会自动：
 
 ```bash
 # 安装 ai-context（工作流指令）
-git clone https://github.com/zeromicro/ai-context.git .claude/ai-context
+git submodule add https://github.com/zeromicro/ai-context.git .claude/ai-context
 
 # 安装 zero-skills（知识库）
-git clone https://github.com/zeromicro/zero-skills.git .claude/skills/zero-skills
+git submodule add https://github.com/zeromicro/zero-skills.git .claude/skills/zero-skills
 
-# 安装 mcp-zero（代码生成工具）
+# 安装 mcp-zero（代码生成工具）- 个人目录，不在项目内
 git clone https://github.com/zeromicro/mcp-zero.git ~/.mcp-zero
 cd ~/.mcp-zero && go build -o mcp-zero main.go
 
@@ -280,7 +281,7 @@ git submodule add https://github.com/zeromicro/ai-context.git .github/ai-context
 ln -s ai-context/00-instructions.md .github/copilot-instructions.md
 
 # 添加 zero-skills 作为参考
-git clone https://github.com/zeromicro/zero-skills.git .ai-context/zero-skills
+git submodule add https://github.com/zeromicro/zero-skills.git .ai-context/zero-skills
 ```
 
 ### Cursor
@@ -290,7 +291,7 @@ git clone https://github.com/zeromicro/zero-skills.git .ai-context/zero-skills
 git submodule add https://github.com/zeromicro/ai-context.git .cursorrules
 
 # 添加 zero-skills 作为参考
-git clone https://github.com/zeromicro/zero-skills.git .ai-context/zero-skills
+git submodule add https://github.com/zeromicro/zero-skills.git .ai-context/zero-skills
 ```
 
 Cursor 自动读取 `.cursorrules` 目录中的所有 `.md` 文件。
@@ -302,7 +303,7 @@ Cursor 自动读取 `.cursorrules` 目录中的所有 `.md` 文件。
 git submodule add https://github.com/zeromicro/ai-context.git .windsurfrules
 
 # 添加 zero-skills 作为参考
-git clone https://github.com/zeromicro/zero-skills.git .ai-context/zero-skills
+git submodule add https://github.com/zeromicro/zero-skills.git .ai-context/zero-skills
 ```
 
 ## 安装后
@@ -334,14 +335,15 @@ git clone https://github.com/zeromicro/zero-skills.git .ai-context/zero-skills
 保持 AI 上下文最新：
 
 ```bash
-# 更新 ai-context
+# 一次更新所有子模块
+git submodule update --remote --recursive
+
+# 或单独更新
 git submodule update --remote .github/ai-context  # Copilot
 git submodule update --remote .cursorrules        # Cursor
 git submodule update --remote .windsurfrules      # Windsurf
-
-# 更新 zero-skills
-cd .claude/skills/zero-skills && git pull         # Claude Code
-cd .ai-context/zero-skills && git pull            # 其他工具
+git submodule update --remote .ai-context/zero-skills
+git submodule update --remote .claude/skills/zero-skills
 ```
 
 ## 工作原理
