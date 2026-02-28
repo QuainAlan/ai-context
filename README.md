@@ -16,11 +16,10 @@ Your AI will automatically:
 1. Detect which AI tool you're using (Claude Code, Cursor, Copilot, Windsurf)
 2. Install the appropriate configuration
 3. Set up zero-skills knowledge base
-4. Configure mcp-zero tools (if using Claude)
 
 ## What Gets Installed
 
-This prompt sets up a three-layer AI assistance system:
+This prompt sets up a two-layer AI assistance system:
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -32,42 +31,31 @@ This prompt sets up a three-layer AI assistance system:
              │  ai-context         │  "What to do" - Quick decisions
              │  (~5KB)             │  Loaded for every interaction
              │                     │
-             ├─ Knowledge Layer ───┤
-             │  zero-skills        │  "How & Why" - Detailed patterns
-             │  (~40KB)            │  Loaded when needed
-             │                     │
-             └─ Execution Layer ───┘
-                mcp-zero             "Do it" - Run goctl commands
-                (MCP Server)          Generate actual code files
+             └─ Knowledge Layer ───┘
+                zero-skills          "How & Why" - Detailed patterns
+                (~40KB)              + goctl command reference
+                                     Loaded when needed
 ```
+
+The AI runs `goctl` directly in the terminal for code generation — no separate tools or servers needed.
 
 | Component | Purpose | Size | Repository |
 |-----------|---------|------|------------|
 | **ai-context** | Workflow instructions, decision trees | ~5KB | [zeromicro/ai-context](https://github.com/zeromicro/ai-context) |
-| **zero-skills** | Comprehensive patterns, best practices | ~40KB | [zeromicro/zero-skills](https://github.com/zeromicro/zero-skills) |
-| **mcp-zero** | Runtime tools, code generation | MCP Server | [zeromicro/mcp-zero](https://github.com/zeromicro/mcp-zero) |
+| **zero-skills** | Comprehensive patterns, best practices, goctl reference | ~45KB | [zeromicro/zero-skills](https://github.com/zeromicro/zero-skills) |
 
 ## Manual Setup
 
 If you prefer manual installation, choose your AI tool:
 
-### Claude Code (Recommended)
+### Claude Code
 
 ```bash
 # Install ai-context (workflow instructions)
 git submodule add https://github.com/zeromicro/ai-context.git .claude/ai-context
 
-# Install zero-skills (knowledge base)
+# Install zero-skills (knowledge base + goctl reference)
 git submodule add https://github.com/zeromicro/zero-skills.git .claude/skills/zero-skills
-
-# Install mcp-zero (code generation tools) - personal directory, not in project
-git clone https://github.com/zeromicro/mcp-zero.git ~/.mcp-zero
-cd ~/.mcp-zero && go build -o mcp-zero main.go
-
-# Configure mcp-zero in Claude Code
-claude mcp add mcp-zero --transport stdio \
-  --env GOCTL_PATH=$(which goctl) \
-  -- ~/.mcp-zero/mcp-zero
 ```
 
 ### GitHub Copilot
@@ -162,16 +150,21 @@ Provides comprehensive knowledge:
 - **RPC patterns**: Service discovery, load balancing
 - **Database patterns**: SQL, MongoDB, Redis, caching
 - **Resilience patterns**: Circuit breaker, rate limiting
+- **goctl commands**: Complete reference for all goctl operations, post-generation steps, templates
 - **Troubleshooting**: Common errors and solutions
 
-### mcp-zero
+### How Code Generation Works
 
-Provides runtime tools:
-- `create_api_service`: Generate REST API from .api file
-- `create_rpc_service`: Generate gRPC service from .proto file
-- `generate_model`: Generate database models
-- `analyze_project`: Understand existing go-zero structure
-- `query_docs`: Search go-zero documentation
+The AI runs `goctl` directly in the terminal — the same tool go-zero developers use manually:
+
+```bash
+# AI writes .api spec → runs goctl → fixes imports → builds
+goctl api go -api user.api -dir . --style go_zero
+go mod tidy
+go build ./...
+```
+
+No separate MCP server or binary needed. Just `goctl` and Go.
 
 ## Feature Comparison
 
@@ -179,8 +172,7 @@ Provides runtime tools:
 |---------|-------------|--------|---------|----------|
 | ai-context | ✅ Auto-load | ✅ Via rules | ✅ Via instructions | ✅ Via rules |
 | zero-skills | ✅ Native skills | ✅ Reference | ✅ Reference | ✅ Reference |
-| mcp-zero | ✅ Full integration | ❌ | ❌ | ❌ |
-| Code generation | ✅ Automatic | ❌ Manual goctl | ❌ Manual goctl | ❌ Manual goctl |
+| goctl code gen | ✅ Terminal | ✅ Terminal | ✅ Terminal | ✅ Terminal |
 | Subagent workflows | ✅ | ❌ | ❌ | ❌ |
 
 ## Requirements
@@ -193,7 +185,6 @@ Provides runtime tools:
 
 - [go-zero](https://github.com/zeromicro/go-zero) - The framework
 - [zero-skills](https://github.com/zeromicro/zero-skills) - Knowledge base
-- [mcp-zero](https://github.com/zeromicro/mcp-zero) - MCP tools
 
 ## License
 
@@ -217,11 +208,10 @@ AI 会自动：
 1. 检测你使用的 AI 工具（Claude Code、Cursor、Copilot、Windsurf）
 2. 安装相应的配置
 3. 设置 zero-skills 知识库
-4. 配置 mcp-zero 工具（如果使用 Claude）
 
 ## 安装内容
 
-这个提示会设置一个三层 AI 辅助系统：
+这个提示会设置一个两层 AI 辅助系统：
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -233,42 +223,31 @@ AI 会自动：
              │  ai-context         │  "做什么" - 快速决策
              │  (~5KB)             │  每次交互都加载
              │                     │
-             ├─ 知识层 ────────────┤
-             │  zero-skills        │  "如何和为什么" - 详细模式
-             │  (~40KB)            │  需要时加载
-             │                     │
-             └─ 执行层 ────────────┘
-                mcp-zero             "执行" - 运行 goctl 命令
-                (MCP Server)          生成实际代码文件
+             └─ 知识层 ────────────┘
+                zero-skills          "如何和为什么" - 详细模式
+                (~45KB)              + goctl 命令参考
+                                     需要时加载
 ```
+
+AI 在终端中直接运行 `goctl` 生成代码——无需额外工具或服务器。
 
 | 组件 | 用途 | 大小 | 仓库 |
 |------|------|------|------|
 | **ai-context** | 工作流指令、决策树 | ~5KB | [zeromicro/ai-context](https://github.com/zeromicro/ai-context) |
-| **zero-skills** | 完整模式、最佳实践 | ~40KB | [zeromicro/zero-skills](https://github.com/zeromicro/zero-skills) |
-| **mcp-zero** | 运行时工具、代码生成 | MCP Server | [zeromicro/mcp-zero](https://github.com/zeromicro/mcp-zero) |
+| **zero-skills** | 完整模式、最佳实践、goctl 参考 | ~45KB | [zeromicro/zero-skills](https://github.com/zeromicro/zero-skills) |
 
 ## 手动安装
 
 如果你喜欢手动安装，选择你的 AI 工具：
 
-### Claude Code（推荐）
+### Claude Code
 
 ```bash
 # 安装 ai-context（工作流指令）
 git submodule add https://github.com/zeromicro/ai-context.git .claude/ai-context
 
-# 安装 zero-skills（知识库）
+# 安装 zero-skills（知识库 + goctl 参考）
 git submodule add https://github.com/zeromicro/zero-skills.git .claude/skills/zero-skills
-
-# 安装 mcp-zero（代码生成工具）- 个人目录，不在项目内
-git clone https://github.com/zeromicro/mcp-zero.git ~/.mcp-zero
-cd ~/.mcp-zero && go build -o mcp-zero main.go
-
-# 在 Claude Code 中配置 mcp-zero
-claude mcp add mcp-zero --transport stdio \
-  --env GOCTL_PATH=$(which goctl) \
-  -- ~/.mcp-zero/mcp-zero
 ```
 
 ### GitHub Copilot
@@ -363,16 +342,21 @@ git submodule update --remote .claude/skills/zero-skills
 - **RPC 模式**：服务发现、负载均衡
 - **数据库模式**：SQL、MongoDB、Redis、缓存
 - **弹性模式**：熔断器、限流
+- **goctl 命令**：所有 goctl 操作的完整参考、生成后步骤、模板
 - **故障排查**：常见错误和解决方案
 
-### mcp-zero
+### 代码生成方式
 
-提供运行时工具：
-- `create_api_service`：从 .api 文件生成 REST API
-- `create_rpc_service`：从 .proto 文件生成 gRPC 服务
-- `generate_model`：生成数据库模型
-- `analyze_project`：理解现有 go-zero 结构
-- `query_docs`：搜索 go-zero 文档
+AI 在终端中直接运行 `goctl`——与 go-zero 开发者手动使用的工具相同：
+
+```bash
+# AI 编写 .api 规范 → 运行 goctl → 修复导入 → 构建
+goctl api go -api user.api -dir . --style go_zero
+go mod tidy
+go build ./...
+```
+
+无需额外的 MCP 服务器或二进制文件。只需 `goctl` 和 Go。
 
 ## 功能对比
 
@@ -380,8 +364,7 @@ git submodule update --remote .claude/skills/zero-skills
 |------|-------------|--------|---------|----------|
 | ai-context | ✅ 自动加载 | ✅ 通过规则 | ✅ 通过指令 | ✅ 通过规则 |
 | zero-skills | ✅ 原生技能 | ✅ 引用 | ✅ 引用 | ✅ 引用 |
-| mcp-zero | ✅ 完整集成 | ❌ | ❌ | ❌ |
-| 代码生成 | ✅ 自动 | ❌ 手动 goctl | ❌ 手动 goctl | ❌ 手动 goctl |
+| goctl 代码生成 | ✅ 终端 | ✅ 终端 | ✅ 终端 | ✅ 终端 |
 | 子代理工作流 | ✅ | ❌ | ❌ | ❌ |
 
 ## 环境要求
@@ -394,7 +377,6 @@ git submodule update --remote .claude/skills/zero-skills
 
 - [go-zero](https://github.com/zeromicro/go-zero) - 框架本身
 - [zero-skills](https://github.com/zeromicro/zero-skills) - 知识库
-- [mcp-zero](https://github.com/zeromicro/mcp-zero) - MCP 工具
 
 ## 许可证
 

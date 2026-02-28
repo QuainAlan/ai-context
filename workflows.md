@@ -4,11 +4,11 @@
 
 ```
 1. Ask requirements
-2. create_api_spec
+2. Write .api spec file (follow patterns.md)
 3. Show spec, get approval
-4. create_api_service
-5. generate_api_from_spec
-6. Implement logic
+4. goctl api go -api <file>.api -dir . --style go_zero
+5. go mod tidy && go build ./...
+6. Implement logic in internal/logic/
 7. Generate tests
 8. Generate README.md (service overview, API docs, usage examples)
 9. Generate API.md (detailed endpoint documentation)
@@ -18,19 +18,21 @@
 
 ```
 1. Ask requirements
-2. create_rpc_service
-3. Show proto
-4. Implement methods
-5. Generate tests
-6. Generate README.md (service overview, proto docs, usage examples)
-7. Generate RPC.md (detailed method documentation)
+2. Write .proto file
+3. Show proto, get approval
+4. goctl rpc protoc <file>.proto --go_out=. --go-grpc_out=. --zrpc_out=. --style go_zero
+5. go mod tidy && go build ./...
+6. Implement methods in internal/logic/
+7. Generate tests
+8. Generate README.md (service overview, proto docs, usage examples)
+9. Generate RPC.md (detailed method documentation)
 ```
 
 ## 3. Database Model
 
 ```
-1. Get DB type and connection
-2. generate_model
+1. Get DB type and connection info
+2. goctl model mysql datasource -url "<dsn>" -table "<table>" -dir ./model --style go_zero
 3. Add to ServiceContext
 4. Use in logic
 ```
@@ -39,33 +41,36 @@
 
 ```
 1. Edit .api file
-2. validate_input
-3. generate_api_from_spec
-4. Update logic
-5. Update tests
+2. goctl api validate -api <file>.api
+3. goctl api go -api <file>.api -dir . --style go_zero
+4. go mod tidy && go build ./...
+5. Update logic
+6. Update tests
 ```
 
 ## 5. Add Auth
 
 ```
-1. Add JWT config
+1. Add JWT config to etc/<service>.yaml
 2. Create login endpoint (generate token)
-3. Add @server(jwt: Auth) to protected routes
-4. Access userId from context
+3. Add @server(jwt: Auth) to protected routes in .api
+4. Re-generate: goctl api go -api <file>.api -dir . --style go_zero
+5. Access userId from context in logic
 ```
 
 ## 6. Add Caching
 
 ```
-1. Add cache config
-2. generate_model with cache=true
+1. Add cache config to etc/<service>.yaml
+2. Re-generate model with -cache flag:
+   goctl model mysql datasource -url "<dsn>" -table "<table>" -dir ./model -cache --style go_zero
 3. Use cache.CacheConf in config
 ```
 
 ## 7. Add Validation
 
 ```
-1. Add validate tags to types
+1. Add validate tags to types in .api spec
 2. Add Validator to ServiceContext
 3. Call Validator.StructCtx in logic
 ```

@@ -3,7 +3,7 @@
 ## File Priority
 
 1. `workflows.md` - Task patterns
-2. `tools.md` - MCP tools
+2. `tools.md` - goctl commands
 3. `patterns.md` - Code patterns
 4. [zero-skills](https://github.com/zeromicro/zero-skills) - Detailed patterns (查阅详细模式)
 
@@ -11,15 +11,17 @@
 
 ### Spec-First
 - ALWAYS create `.api` spec before code
-- Use `create_api_spec` tool
-- Validate with `validate_input`
+- Write spec following patterns in `patterns.md`
+- Validate with `goctl api validate`
 
 ### Tool Usage
-- Use mcp-zero tools, NOT manual generation
-- `create_api_service` for new API services
-- `create_rpc_service` for new RPC services
-- `generate_api_from_spec` for code from spec
-- `generate_model` for database models
+- Use goctl commands in terminal, NOT manual code generation
+- `goctl api new` for new API services
+- `goctl rpc new` / `goctl rpc protoc` for new RPC services
+- `goctl api go` for code from spec
+- `goctl model mysql/pg/mongo` for database models
+- Always run post-generation steps: `go mod tidy` → verify imports → `go build ./...`
+- If goctl is not installed, install it: `go install github.com/zeromicro/go-zero/tools/goctl@latest`
 
 ### Implementation
 - Generate FULL implementation, not stubs
@@ -48,10 +50,10 @@
 
 ```
 User Request →
-├─ New API? → create_api_service → generate_api_from_spec → Generate docs
-├─ New RPC? → create_rpc_service → Generate docs
-├─ Database? → generate_model
-└─ Modify? → Edit .api → generate_api_from_spec → Update docs
+├─ New API? → Write .api spec → goctl api go → go mod tidy → go build → Generate docs
+├─ New RPC? → Write .proto → goctl rpc protoc → go mod tidy → go build → Generate docs
+├─ Database? → goctl model mysql/pg/mongo
+└─ Modify? → Edit .api → goctl api go → go mod tidy → go build → Update docs
 ```
 
 ## Detailed Patterns
@@ -62,6 +64,7 @@ For complete implementation patterns, refer to [zero-skills](https://github.com/
 - RPC Services → [rpc-patterns.md](https://github.com/zeromicro/zero-skills/blob/main/references/rpc-patterns.md)
 - Database → [database-patterns.md](https://github.com/zeromicro/zero-skills/blob/main/references/database-patterns.md)
 - Resilience → [resilience-patterns.md](https://github.com/zeromicro/zero-skills/blob/main/references/resilience-patterns.md)
+- goctl Commands → [goctl-commands.md](https://github.com/zeromicro/zero-skills/blob/main/references/goctl-commands.md)
 - Troubleshooting → [common-issues.md](https://github.com/zeromicro/zero-skills/blob/main/troubleshooting/common-issues.md)
 
 ## Avoid
@@ -69,5 +72,7 @@ For complete implementation patterns, refer to [zero-skills](https://github.com/
 - Empty stubs
 - Missing validation
 - `fmt.Errorf` for API errors (use `errorx.NewCodeError`)
-- Manual SQL (use `generate_model`)
+- Manual SQL (use `goctl model`)
 - Missing context
+- Skipping post-generation steps (mod tidy, build verify)
+- Mismatched `--style` flag with existing code
